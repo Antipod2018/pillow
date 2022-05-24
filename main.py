@@ -41,7 +41,13 @@ def img_crop(img, a):
     return  img
 
 def in_folder(path):
-    new_dir = os.path.join(path, os.path.basename(path))
+
+    with open("config.txt", 'r', encoding='utf-8') as f:
+        config = f.read()
+    f.close()
+    config = config.split('\n')
+    name = config[1]
+    new_dir = os.path.join(path, name)
     if not os.path.isdir(new_dir):
         os.mkdir(new_dir)
 
