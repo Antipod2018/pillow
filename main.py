@@ -30,10 +30,14 @@ def img_smart_rotate(img_change, angle):
 
 
 def mask(img1, img2):
-    img2 = img2.convert('L').resize(img1.size)
+    img2 = img2.convert('RGBA')
+    img1 = img1.convert('RGBA')
+    img2 = img2.resize(img1.size)
+    img1 = Image.alpha_composite(img1, img2)
+    bg = Image.new("RGB", img1.size, (255, 255, 255))
+    bg.paste(img1, img1)
+    return bg
 
-    img1.putalpha(img2)
-    return img1
 
 def img_crop(img, a):
     width, height = img.size
@@ -47,6 +51,8 @@ def in_folder(path):
     f.close()
     config = config.split('\n')
     name = config[1]
+    mask_path = config[2]
+
     new_dir = os.path.join(path, name)
     if not os.path.isdir(new_dir):
         os.mkdir(new_dir)
@@ -60,20 +66,13 @@ def in_folder(path):
             new_img_path = os.path.join(new_dir, i)
             img1 = Image.open(path_img)
 
-            im2 = Image.open('маска.jpg')  # маска для изображения
+            im2 = Image.open(mask_path)  # маска для изображения
 
-            im2 = ImageOps.invert(im2)  # если накладывается картинка на белом фоне, эту строку закоментить
-            img1 = mask(img1, im2)  # накладывает прозрачное изображение(изображение на черном фоне)
 
-            fill_color = 'black'
-            if img1.mode in ('RGBA', 'LA'):  # это для нормальной работы маски
-                background = Image.new(img1.mode[:-1], img1.size, fill_color)
-                background.paste(img1, img1.split()[-1])
-                img1 = background
 
-            img1 = img_crop(img1, 10)  # обрезает картинки, второй параметр - колл пикселей
-            img1 = img_smart_rotate(img1,
-                                    3)  # вращает картинки на угол, указанный вторым параметром + обрезает черные углы
+            #img1 = img_crop(img1, 10)  # обрезает картинки, второй параметр - колл пикселей
+            img1 = img_smart_rotate(img1, 3)  # вращает картинки на угол, указанный вторым параметром + обрезает черные углы
+            img1 = mask(img1, im2)
             img1 = size_change(img1)  # делает картинку 800Х600(второй параметр может быть меньше)
 
             img1.save(new_img_path)
@@ -113,17 +112,6 @@ if __name__ == '__main__':
     path = config[0]
 
     search_folder(path)
-
-
-
-
-
-
-
-
-
-
-
 
 
 
