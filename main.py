@@ -52,7 +52,8 @@ def in_folder(path):
     config = config.split('\n')
     name = config[1]
     mask_path = config[2]
-
+    flag = config[3]
+    name = os.path.basename(path) + '_' +name
     new_dir = os.path.join(path, name)
     if not os.path.isdir(new_dir):
         os.mkdir(new_dir)
@@ -64,18 +65,30 @@ def in_folder(path):
         if path_img.endswith(suffix):
             i = os.path.basename(path_img)
             new_img_path = os.path.join(new_dir, i)
-            img1 = Image.open(path_img)
 
-            im2 = Image.open(mask_path)  # маска для изображения
+            if flag == 1:
 
+                img1 = Image.open(path_img)
+                im2 = Image.open(mask_path)  # маска для изображени
+                # img1 = img_crop(img1, 10)  # обрезает картинки, второй параметр - колл пикселей
+                img1 = img_smart_rotate(img1, 3)  # вращает картинки на угол, указанный вторым параметром + обрезает черные углы
+                img1 = mask(img1, im2)
+                img1 = size_change(img1)  # делает картинку 800Х600(второй параметр может быть меньше)
 
+                img1.save(new_img_path)
+            else:
+                if os.path.exists(new_img_path):
 
-            #img1 = img_crop(img1, 10)  # обрезает картинки, второй параметр - колл пикселей
-            img1 = img_smart_rotate(img1, 3)  # вращает картинки на угол, указанный вторым параметром + обрезает черные углы
-            img1 = mask(img1, im2)
-            img1 = size_change(img1)  # делает картинку 800Х600(второй параметр может быть меньше)
+                    pass
+                else:
+                    img1 = Image.open(path_img)
+                    im2 = Image.open(mask_path)  # маска для изображени
+                    # img1 = img_crop(img1, 10)  # обрезает картинки, второй параметр - колл пикселей
+                    img1 = img_smart_rotate(img1, 3)  # вращает картинки на угол, указанный вторым параметром + обрезает черные углы
+                    img1 = mask(img1, im2)
+                    img1 = size_change(img1)
 
-            img1.save(new_img_path)
+                    img1.save(new_img_path)
 
 
 def search_folder(path):
