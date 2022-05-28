@@ -52,8 +52,11 @@ def in_folder(path):
     config = config.split('\n')
     name = config[1]
     mask_path = config[2]
-    flag = config[3]
-    name = os.path.basename(path) + '_' +name
+    flag = int(config[3])
+    flag1 = int(config[4])
+    if flag1:
+        name = os.path.basename(path) + '_' +name
+    else: pass
     new_dir = os.path.join(path, name)
     if not os.path.isdir(new_dir):
         os.mkdir(new_dir)
@@ -66,7 +69,7 @@ def in_folder(path):
             i = os.path.basename(path_img)
             new_img_path = os.path.join(new_dir, i)
 
-            if flag == 1:
+            if flag:
 
                 img1 = Image.open(path_img)
                 im2 = Image.open(mask_path)  # маска для изображени
